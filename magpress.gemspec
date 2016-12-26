@@ -9,17 +9,9 @@ Gem::Specification.new do |spec|
   spec.authors       = ["Amit Patel"]
   spec.email         = ["amit.patel@botreeconsulting.com"]
 
-  spec.summary       = %q{TODO: Write a short summary, because Rubygems requires one.}
-  spec.description   = %q{TODO: Write a longer description or delete this line.}
-  spec.homepage      = "TODO: Put your gem's website or public repo URL here."
-
-  # Prevent pushing this gem to RubyGems.org by setting 'allowed_push_host', or
-  # delete this section to allow pushing this gem to any host.
-  if spec.respond_to?(:metadata)
-    spec.metadata['allowed_push_host'] = "TODO: Set to 'http://mygemserver.com'"
-  else
-    raise "RubyGems 2.0 or newer is required to protect against public gem pushes."
-  end
+  spec.summary       = %q{Ruby wrapper of a custom WordPress plugin for http://www.magnificent.com}
+  spec.homepage      = "https://github.com/BoTreeConsultingTeam/magpress"
+  spec.description   = %q{Implements the complete functionality of the WordPress custom API for MAGnificent.}
 
   spec.files         = `git ls-files -z`.split("\x0").reject { |f| f.match(%r{^(test|spec|features)/}) }
   spec.bindir        = "exe"
@@ -28,4 +20,17 @@ Gem::Specification.new do |spec|
 
   spec.add_development_dependency "bundler", "~> 1.9"
   spec.add_development_dependency "rake", "~> 10.0"
+  spec.add_development_dependency "minitest"
+  spec.add_development_dependency "minitest-spec-context", "~> 0.0.3"
+  spec.add_development_dependency "mocha"
+  spec.add_development_dependency "vcr"
+  spec.add_development_dependency "webmock"
+  spec.add_development_dependency "pry"
+
+  spec.add_dependency "faraday"
+  spec.add_dependency "faraday_middleware"
+  spec.add_dependency "faraday-detailed_logger"
+  spec.add_dependency "hashie"
+  # spec.add_dependency "activesupport"
+  spec.add_dependency "json"
 end
