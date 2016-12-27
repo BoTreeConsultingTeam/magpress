@@ -19,7 +19,7 @@ module Magpress
     end
 
     def destroy(id, force=nil)
-      connection.delete(resource_path(id), force: force)
+      connection.delete(resource_path(id), { force: force })
     end
   end
 end

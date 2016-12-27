@@ -3,7 +3,7 @@ require 'magpress/tag'
 
 describe Magpress::Tag do
 
-  TAG_ATTRIBUTES = %w(tag_id name count description link slug taxonomy)
+  TAG_ATTRIBUTES = %w(id name count description link slug taxonomy)
 
   describe '#all' do
     it 'should return empty array when no tags' do

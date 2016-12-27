@@ -3,7 +3,7 @@ require 'magpress/author'
 
 describe Magpress::Author do
 
-  AUTHOR_ATTRIBUTES = %w(user_id user_login display_name email)
+  AUTHOR_ATTRIBUTES = %w(id user_login display_name email)
 
   describe '#all' do
     it 'should return empty array when no authors' do

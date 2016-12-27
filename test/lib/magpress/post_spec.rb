@@ -2,9 +2,7 @@ require './test/minitest_helper'
 require 'magpress/post'
 
 describe Magpress::Post do
-  it 'exists' do
-    assert Magpress::Post
-  end
+
   POST_ATTRIBUTES = %w(id title date status type name author excerpt content link guid thumbnail categories tags)
   describe '#get' do
     it 'should return error for non existing post' do
@@ -20,8 +18,7 @@ describe Magpress::Post do
       response = post.get(response.body.id)
 
       assert_equal 200, response.status
-      assert_equal POST_ATTRIBUTES, response.body.keys
-      # TODO verify all attribute values
+      assert_resource_attributes('Post', response, POST_ATTRIBUTES)
     end
 
     it 'should unauthorize request if altered auth_key is passed' do
@@ -42,8 +39,7 @@ describe Magpress::Post do
 
       body = response.body
       refute body.length.zero?
-      assert_equal POST_ATTRIBUTES, response.body.first.keys, 'Any return post should have all required attributes'
-      # TODO verify all attribute values
+      assert_resource_attributes('Post', response, POST_ATTRIBUTES)
     end
 
     it 'should unauthorize request if altered auth_key is passed' do
@@ -205,6 +201,7 @@ describe Magpress::Post do
     end
   end
 
+
   describe '#delete' do
     before(:each) do
       response = post.create(new_post_params)
@@ -222,8 +219,8 @@ describe Magpress::Post do
       assert_equal 'trash', response.body.status
     end
 
-    it 'should trash the post' do
-      response = post.destroy(@post_id, force: true)
+    it 'should remove the post permanently' do
+      response = post.destroy(@post_id, true)
 
       assert_equal 200, response.status
       assert response.body.success

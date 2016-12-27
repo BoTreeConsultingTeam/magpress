@@ -37,3 +37,8 @@ def assert_unauthorized_token(klass, method, *params)
   assert_equal 403, response.status
   #TODO verify error body
 end
+
+def assert_resource_attributes(resource, response, expected_attributes)
+  attributes_list = response.body.kind_of?(Array)? response.body.first.keys : response.body.keys
+  assert_equal expected_attributes, attributes_list, "Any return #{resource} should have all required attributes"
+end
