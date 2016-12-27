@@ -18,7 +18,7 @@ module Magpress
       connection.post(resource_path(id), params)
     end
 
-    def destroy(id, force=false)
+    def destroy(id, force=nil)
       connection.delete(resource_path(id), force: force)
     end
   end

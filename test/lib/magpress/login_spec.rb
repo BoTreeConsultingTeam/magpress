@@ -7,7 +7,6 @@ describe Magpress::Login do
 
   describe '#call' do
     it 'should return valid JWT token' do
-      #TODO remove hardcoded creds
       login =
           Magpress::Login.new(CREDENTIALS)
       response = login.call
@@ -21,16 +20,28 @@ describe Magpress::Login do
       assert body.auth_key.length > 0
     end
 
-    it 'should return authentication error for wrong credentials' do
-      creds = CREDENTIALS.clone
-      creds[:password] = '**'
-      login =
-          Magpress::Login.new(creds)
-      response = login.call
+    context 'with wrong credentials' do
+      it 'should return authentication error when username does not match' do
+        creds = CREDENTIALS.clone
+        creds[:username] = 'amit from botree'
+        login =
+            Magpress::Login.new(creds)
+        response = login.call
 
-      assert_equal 403, response.status
-      # TODO: check response body for detailed message
-      # assert_matches /Incorrect username or password/, response.body['message']
+        assert_equal 403, response.status
+        assert_match /Invalid username/, response.body.message
+      end
+
+      it 'should return authentication error when password does not match' do
+        creds = CREDENTIALS.clone
+        creds[:password] = '**'
+        login =
+            Magpress::Login.new(creds)
+        response = login.call
+
+        assert_equal 403, response.status
+        assert_match /password.*incorrect/, response.body.message
+      end
     end
   end
 end

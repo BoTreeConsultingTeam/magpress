@@ -2,11 +2,9 @@ require './test/minitest_helper'
 require 'magpress/post'
 
 describe Magpress::Post do
-
   it 'exists' do
     assert Magpress::Post
   end
-
   POST_ATTRIBUTES = %w(id title date status type name author excerpt content link guid thumbnail categories tags)
   describe '#get' do
     it 'should return error for non existing post' do
@@ -17,7 +15,9 @@ describe Magpress::Post do
     end
 
     it 'should return post details' do
-      response = post.get(110)
+      response = post.create(new_post_params)
+
+      response = post.get(response.body.id)
 
       assert_equal 200, response.status
       assert_equal POST_ATTRIBUTES, response.body.keys
@@ -28,6 +28,7 @@ describe Magpress::Post do
       assert_unauthorized_token(Magpress::Post, :get, 110)
     end
   end
+
 
   describe '#all' do
     it 'should return empty array when no posts' do
@@ -114,7 +115,7 @@ describe Magpress::Post do
     end
 
     it 'should unauthorize request if altered auth_key is passed' do
-      # assert_unauthorized_token(Magpress::Post, :create)
+      assert_unauthorized_token(Magpress::Post, :create, new_post_params)
     end
   end
 
@@ -200,7 +201,7 @@ describe Magpress::Post do
     end
 
     it 'should unauthorize request if altered auth_key is passed' do
-      assert_unauthorized_token(Magpress::Post, :update)
+      assert_unauthorized_token(Magpress::Post, :update, 0, update_post_params)
     end
   end
 
@@ -212,12 +213,24 @@ describe Magpress::Post do
 
     it 'should trash the post' do
       response = post.destroy(@post_id)
-      #TODO assert response
+
+      assert_equal 200, response.status
+      assert response.body.success
+
+      response = post.get(@post_id)
+      assert_equal 200, response.status
+      assert_equal 'trash', response.body.status
     end
 
-    it 'should remove the post permanently' do
-      response = post.destroy(@post_id, true)
-      #TODO assert response
+    it 'should trash the post' do
+      response = post.destroy(@post_id, force: true)
+
+      assert_equal 200, response.status
+      assert response.body.success
+
+      response = post.get(@post_id)
+      assert_equal 404, response.status
+      assert_match /Invalid post id/, response.body.message
     end
   end
 
@@ -226,11 +239,11 @@ describe Magpress::Post do
       @post ||= Magpress::Post.new(CREDENTIALS)
     end
 
-    def assert_unauthorized_token(klass, method, params=nil)
+    def assert_unauthorized_token(klass, method, *params)
       Magpress::Base.any_instance.stubs(:auth_key).returns('eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJodHRwOlwvXC9hcHBzLm9wZW50ZXN0ZHJpdmUuY29tOjgwODBcL21hZ25pZmljZW50IiwiaWF0IjoxNDgyMzI0Mzg1LCJuYmYiOjE0ODIzMjQzODUsImV4cCI6MTQ4MjM0MTY2NSwiZGF0YSI6eyJ1c2VyIjp7ImlkIjoiMSJ9fX0.JhRq2AyurGHNPYQAGH-W2XvdizB2f6ktfiO1qWxrgA1') #mocha
 
       post = klass.new(CREDENTIALS)
-      response = params ? post.send(method, params) :  post.send(method)
+      response = params ? post.send(method, *params) :  post.send(method)
 
       assert_equal 403, response.status
       #TODO verify error body
@@ -252,7 +265,7 @@ describe Magpress::Post do
     def new_post_params
       @post_params ||= {
           'title' => 'Enter in NewYork',
-          'status' => 'publish',
+          'status' => 'draft',
           'content' => "\r\n      \r\n    <p class=\"graf graf--p graf--empty graf--first\"><br></p><p class=\"graf graf--p\" name=\"shvpugnmtaux47vi\"><b> THE BROPINIONWORDS: GABE</b></p><p class=\"graf graf--p graf--last is-selected\" name=\"098lj5tl3iqeulvunmi\"><i>Like Christian Grey, the first and mostimportant trait a “Ms. Green” can bring tothe bedroom is a powerful, prideful presence. You can</i></p>\r\n ",
           'author' => 0,
           'excerpt' => 'Cool things to do in Newyork',
