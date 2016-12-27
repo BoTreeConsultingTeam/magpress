@@ -27,3 +27,13 @@ LOGIN = Magpress::Login.new(CREDENTIALS)
 def auth_key
   LOGIN.call.body['auth_key']
 end
+
+def assert_unauthorized_token(klass, method, *params)
+  Magpress::Base.any_instance.stubs(:auth_key).returns('eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJodHRwOlwvXC9hcHBzLm9wZW50ZXN0ZHJpdmUuY29tOjgwODBcL21hZ25pZmljZW50IiwiaWF0IjoxNDgyMzI0Mzg1LCJuYmYiOjE0ODIzMjQzODUsImV4cCI6MTQ4MjM0MTY2NSwiZGF0YSI6eyJ1c2VyIjp7ImlkIjoiMSJ9fX0.JhRq2AyurGHNPYQAGH-W2XvdizB2f6ktfiO1qWxrgA1') #mocha
+
+  post = klass.new(CREDENTIALS)
+  response = params ? post.send(method, *params) :  post.send(method)
+
+  assert_equal 403, response.status
+  #TODO verify error body
+end
