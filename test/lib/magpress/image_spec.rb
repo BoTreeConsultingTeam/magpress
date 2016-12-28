@@ -9,10 +9,11 @@ describe Magpress::Image do
 
   describe '#get' do
     it 'should return error for non existing image' do
-      response = image.get(0)
 
-      assert_equal 404, response.status
-      assert_match /Invalid post id/, response.body.message
+      error = assert_raises Magpress::ResourceNotFoundError do
+        image.get(0)
+      end
+      assert_match /Invalid post id/, error.message
     end
 
     it 'should return image details' do
@@ -81,8 +82,9 @@ describe Magpress::Image do
 
     describe 'without required params' do
       it 'should fail' do
-        response = image.create({})
-        assert_equal 400, response.status
+        assert_raises Magpress::BadRequestError do
+          image.create({})
+        end
       end
     end
 
@@ -103,9 +105,10 @@ describe Magpress::Image do
       assert_equal 200, response.status
       assert response.body.success
 
-      response = image.get(@image_id)
-      assert_equal 404, response.status
-      assert_match /Invalid post id/, response.body.message
+      error = assert_raises Magpress::ResourceNotFoundError do
+        image.get(@image_id)
+      end
+      assert_match /Invalid post id/, error.message
     end
   end
 

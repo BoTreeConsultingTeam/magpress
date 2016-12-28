@@ -3,6 +3,7 @@ require 'faraday_middleware'
 require 'logger'
 # require 'faraday/detailed_logger'
 require 'hashie'
+require 'faraday/raise_http_exception'
 
 # require 'activesupport/middleware'
 
@@ -12,7 +13,7 @@ module Magpress
 
     def initialize(url, options = {})
       @url = url
-      @options = options #.merge(request: { params_encoder: Faraday::FlatParamsEncoder })
+      @options = options
     end
 
     def connection
@@ -21,6 +22,7 @@ module Magpress
         # faraday.response :logger, ::Logger.new(STDOUT), bodies: true # :detailed_logger
         faraday.response :mashify
         faraday.response :json, :content_type => /\bjson$/
+        faraday.use ::FaradayMiddleware::RaiseHttpException
         faraday.adapter Faraday.default_adapter
       end
 

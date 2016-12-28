@@ -24,24 +24,21 @@ describe Magpress::Login do
       it 'should return authentication error when username does not match' do
         creds = CREDENTIALS.clone
         creds[:username] = 'amit from botree'
-        login =
-            Magpress::Login.new(creds)
-        response = login.call
-
-        assert_equal 403, response.status
-        assert_match /Invalid username/, response.body.message
+        assert_unauthorized(creds, /Invalid username/)
       end
 
       it 'should return authentication error when password does not match' do
         creds = CREDENTIALS.clone
         creds[:password] = '**'
-        login =
-            Magpress::Login.new(creds)
-        response = login.call
-
-        assert_equal 403, response.status
-        assert_match /password.*incorrect/, response.body.message
+        assert_unauthorized(creds, /password.*incorrect/)
       end
     end
+  end
+
+  def assert_unauthorized(creds, expected_error_regex)
+    error = assert_raises Magpress::UnauthorizedError do
+      Magpress::Login.new(creds).call
+    end
+    assert_match expected_error_regex, error.message
   end
 end

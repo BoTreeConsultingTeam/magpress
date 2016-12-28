@@ -6,10 +6,10 @@ describe Magpress::Post do
   POST_ATTRIBUTES = %w(id title date status type name author excerpt content link guid thumbnail categories tags)
   describe '#get' do
     it 'should return error for non existing post' do
-      response = post.get(0)
-
-      assert_equal 404, response.status
-      assert_match /Invalid post id/, response.body.message
+      error = assert_raises Magpress::ResourceNotFoundError do
+        post.get(0)
+      end
+      assert_match /Invalid post id/, error.message
     end
 
     it 'should return post details' do
@@ -104,9 +104,10 @@ describe Magpress::Post do
 
     describe 'without required params' do
       it 'should fail' do
-        response = post.create({})
-        assert_equal 400, response.status
-        assert_match /Content, title, and excerpt are empty/, response.body.message
+        error = assert_raises Magpress::BadRequestError do
+          post.create({})
+        end
+        assert_match /Content, title, and excerpt are empty/, error.message
       end
     end
 
@@ -224,26 +225,16 @@ describe Magpress::Post do
 
       assert_equal 200, response.status
       assert response.body.success
-
-      response = post.get(@post_id)
-      assert_equal 404, response.status
-      assert_match /Invalid post id/, response.body.message
+      error = assert_raises Magpress::ResourceNotFoundError do
+        post.get(@post_id)
+      end
+      assert_match /Invalid post id/, error.message
     end
   end
 
   private
     def post
       @post ||= Magpress::Post.new(CREDENTIALS)
-    end
-
-    def assert_unauthorized_token(klass, method, *params)
-      Magpress::Base.any_instance.stubs(:auth_key).returns('eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJodHRwOlwvXC9hcHBzLm9wZW50ZXN0ZHJpdmUuY29tOjgwODBcL21hZ25pZmljZW50IiwiaWF0IjoxNDgyMzI0Mzg1LCJuYmYiOjE0ODIzMjQzODUsImV4cCI6MTQ4MjM0MTY2NSwiZGF0YSI6eyJ1c2VyIjp7ImlkIjoiMSJ9fX0.JhRq2AyurGHNPYQAGH-W2XvdizB2f6ktfiO1qWxrgA1') #mocha
-
-      post = klass.new(CREDENTIALS)
-      response = params ? post.send(method, *params) :  post.send(method)
-
-      assert_equal 403, response.status
-      #TODO verify error body
     end
 
     def assert_create_post_with_valid_params(post_params)
