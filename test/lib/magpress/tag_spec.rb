@@ -13,21 +13,15 @@ describe Magpress::Tag do
     it 'should return all tags' do
       response = tag.all
 
-      assert_equal 200, response.status
-
-      body = response.body
-      refute body.length.zero?
-      assert_tag_attributes(response)
+      refute response.length.zero?
+      assert_resource_attributes('Tag', response, TAG_ATTRIBUTES)
     end
 
     it 'should return tags on specific page' do
       response = tag.all(page: 1, per_page: 2)
 
-      assert_equal 200, response.status
-
-      body = response.body
-      assert_equal 2, body.length
-      assert_tag_attributes(response)
+      assert_equal 2, response.length
+      assert_resource_attributes('Tag', response, TAG_ATTRIBUTES)
     end
 
     it 'should unauthorize request if altered auth_key is passed' do
@@ -36,10 +30,6 @@ describe Magpress::Tag do
   end
 
   private
-    def assert_tag_attributes(response)
-      assert_equal TAG_ATTRIBUTES, response.body.first.keys, 'Any return tag should have all required attributes'
-    end
-
     def tag
       @tag ||= Magpress::Tag.new(CREDENTIALS)
     end

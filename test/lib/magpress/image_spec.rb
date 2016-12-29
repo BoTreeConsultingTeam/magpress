@@ -11,23 +11,21 @@ describe Magpress::Image do
     it 'should return error for non existing image' do
 
       error = assert_raises Magpress::ResourceNotFoundError do
-        image.get(0)
+        image.find(0)
       end
       assert_match /Invalid post id/, error.message
     end
 
     it 'should return image details' do
       response = image.create(image_params)
-      assert_equal 200, response.status
 
-      image_response = response.body
-      assert_equal post_id, image_response.post_id
-      assert_match /sample/, image_response.title
-      assert_equal 'image/jpeg', image_response.type
+      assert_equal post_id, response.post_id
+      assert_match /sample/, response.title
+      assert_equal 'image/jpeg', response.type
     end
 
     it 'should unauthorize request if altered auth_key is passed' do
-      assert_unauthorized_token(Magpress::Image, :get, 0)
+      assert_unauthorized_token(Magpress::Image, :find, 0)
     end
   end
 
@@ -40,20 +38,14 @@ describe Magpress::Image do
     it 'should return all images' do
       response = image.all
 
-      assert_equal 200, response.status
-
-      body = response.body
-      refute body.length.zero?
+      refute response.length.zero?
       assert_resource_attributes('Image', response, IMAGE_ATTRIBUTES)
     end
 
     it 'should return images on specific page' do
       response = image.all(page: 1, per_page: 2)
 
-      assert_equal 200, response.status
-
-      body = response.body
-      assert_equal 2, body.length
+      assert_equal 2, response.length
       assert_resource_attributes('Image', response, IMAGE_ATTRIBUTES)
     end
     
@@ -97,16 +89,15 @@ describe Magpress::Image do
   describe '#delete' do
     before(:each) do
       response = image.create(image_params)
-      @image_id = response.body.id
+      @image_id = response.id
     end
 
     it 'should remove the image permanently' do
       response = image.destroy(@image_id)
-      assert_equal 200, response.status
-      assert response.body.success
+      assert response.success
 
       error = assert_raises Magpress::ResourceNotFoundError do
-        image.get(@image_id)
+        image.find(@image_id)
       end
       assert_match /Invalid post id/, error.message
     end
@@ -118,7 +109,7 @@ describe Magpress::Image do
     end
 
     def post_id
-      @post_id ||= Magpress::Post.new(CREDENTIALS).create(title: 'For testing Image API').body.id
+      @post_id ||= Magpress::Post.new(CREDENTIALS).create(title: 'For testing Image API').id
     end
 
     def image_params
@@ -134,8 +125,7 @@ describe Magpress::Image do
 
     def assert_create_image_with_valid_params(image_params)
       response = image.create(image_params)
-      assert_equal 200, response.status
-      assert response.body.id > 0
-      response.body.id
+      assert response.id > 0
+      response.id
     end
 end

@@ -3,7 +3,7 @@ module Magpress
     END_POINT = '/api/tags'
 
     def all(params={})
-      connection.get(resource_path, params)
+      get(resource_path, params)
     end
   end
 end

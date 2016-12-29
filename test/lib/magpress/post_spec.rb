@@ -7,7 +7,7 @@ describe Magpress::Post do
   describe '#get' do
     it 'should return error for non existing post' do
       error = assert_raises Magpress::ResourceNotFoundError do
-        post.get(0)
+        post.find(0)
       end
       assert_match /Invalid post id/, error.message
     end
@@ -15,14 +15,13 @@ describe Magpress::Post do
     it 'should return post details' do
       response = post.create(new_post_params)
 
-      response = post.get(response.body.id)
+      response = post.find(response.id)
 
-      assert_equal 200, response.status
       assert_resource_attributes('Post', response, POST_ATTRIBUTES)
     end
 
     it 'should unauthorize request if altered auth_key is passed' do
-      assert_unauthorized_token(Magpress::Post, :get, 110)
+      assert_unauthorized_token(Magpress::Post, :find, 110)
     end
   end
 
@@ -35,10 +34,7 @@ describe Magpress::Post do
     it 'should return all posts' do
       response = post.all
 
-      assert_equal 200, response.status
-
-      body = response.body
-      refute body.length.zero?
+      refute response.length.zero?
       assert_resource_attributes('Post', response, POST_ATTRIBUTES)
     end
 
@@ -120,7 +116,7 @@ describe Magpress::Post do
   describe '#update' do
     before(:each) do
       response = post.create(new_post_params)
-      @post_id = response.body.id
+      @post_id = response.id
     end
 
     context 'with all params' do
@@ -206,27 +202,24 @@ describe Magpress::Post do
   describe '#delete' do
     before(:each) do
       response = post.create(new_post_params)
-      @post_id = response.body.id
+      @post_id = response.id
     end
 
     it 'should trash the post' do
       response = post.destroy(@post_id)
 
-      assert_equal 200, response.status
-      assert response.body.success
+      assert response.success
 
-      response = post.get(@post_id)
-      assert_equal 200, response.status
-      assert_equal 'trash', response.body.status
+      response = post.find(@post_id)
+      assert_equal 'trash', response.status
     end
 
     it 'should remove the post permanently' do
       response = post.destroy(@post_id, true)
 
-      assert_equal 200, response.status
-      assert response.body.success
+      assert response.success
       error = assert_raises Magpress::ResourceNotFoundError do
-        post.get(@post_id)
+        post.find(@post_id)
       end
       assert_match /Invalid post id/, error.message
     end
@@ -239,15 +232,13 @@ describe Magpress::Post do
 
     def assert_create_post_with_valid_params(post_params)
       response = post.create(post_params)
-      assert_equal 200, response.status
-      assert response.body.id > 0
-      response.body.id
+      assert response.id > 0
+      response.id
     end
 
     def assert_update_post_with_valid_params(post_id, post_params)
       response = post.update(post_id, post_params)
-      assert_equal 200, response.status
-      assert response.body.success
+      assert response.success
     end
 
     def new_post_params

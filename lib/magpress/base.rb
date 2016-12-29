@@ -25,7 +25,7 @@ module Magpress
         username: username,
         password: password,
         options: options
-      ).call.body['auth_key']
+      ).call.auth_key
     end
 
     private
@@ -40,6 +40,13 @@ module Magpress
 
       def request_format(resource_id)
         resource_id ? "/#{resource_id}#{REQUEST_FORMAT}" : REQUEST_FORMAT
+      end
+
+      # Black Magic - Call http methods on Fraday connection
+      [:get, :post, :put, :patch, :delete].each do |method|
+        define_method(method) do |*args|
+          connection.send(method, *args).body
+        end
       end
   end
 end

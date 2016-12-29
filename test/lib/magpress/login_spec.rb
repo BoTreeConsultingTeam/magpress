@@ -1,4 +1,5 @@
 require './test/minitest_helper'
+require 'hashie'
 
 describe Magpress::Login do
   it 'exists' do
@@ -7,17 +8,12 @@ describe Magpress::Login do
 
   describe '#call' do
     it 'should return valid JWT token' do
-      login =
-          Magpress::Login.new(CREDENTIALS)
-      response = login.call
+      response = Magpress::Login.new(CREDENTIALS).call
 
-      assert_equal 200, response.status
-
-      body = response.body
-      assert_kind_of Hash, body, 'JSON should parsed to Hash'
-      assert_equal 1, body.length, 'Body should have exactly one key value pair'
-      assert body.auth_key?, 'should have auth_key key present in response'
-      assert body.auth_key.length > 0
+      assert_kind_of Hashie::Mash, response, 'JSON should parsed to Hash'
+      assert_equal 1, response.length, 'Body should have exactly one key value pair'
+      assert response.auth_key?, 'should have auth_key key present in response'
+      assert response.auth_key.length > 0
     end
 
     context 'with wrong credentials' do
