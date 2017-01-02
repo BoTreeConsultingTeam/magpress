@@ -15,7 +15,7 @@ module Magpress
     end
 
     def update(id, params)
-      post(resource_path(id), params)
+      put(resource_path(id), params)
     end
 
     def destroy(id, force=nil)

@@ -42,7 +42,7 @@ module Magpress
         resource_id ? "/#{resource_id}#{REQUEST_FORMAT}" : REQUEST_FORMAT
       end
 
-      # Black Magic - Call http methods on Fraday connection
+      # Black Magic - Call http methods on Faraday connection
       [:get, :post, :put, :patch, :delete].each do |method|
         define_method(method) do |*args|
           connection.send(method, *args).body
