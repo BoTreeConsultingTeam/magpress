@@ -17,9 +17,9 @@ describe Magpress::Image do
     end
 
     it 'should return image details' do
-      response = image.create(image_params)
+      create_image_response = image.create(image_params)
 
-      assert_equal post_id, response.post_id
+      response = image.find(create_image_response.id)
       assert_match /sample/, response.title
       assert_equal 'image/jpeg', response.type
     end
@@ -36,6 +36,8 @@ describe Magpress::Image do
     end
 
     it 'should return all images' do
+      image.create(image_params)
+      
       response = image.all
 
       refute response.length.zero?
