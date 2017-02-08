@@ -15,6 +15,7 @@ require 'pry'
 #   c.cassette_library_dir = "test/fixtures"
 #   c.hook_into :webmock
 # end
+INVALID_POST_ID = /Invalid post id/i
 
 CREDENTIALS =  {
     base_url: ENV['CMS_BASE_URL'],

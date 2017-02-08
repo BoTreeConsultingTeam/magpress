@@ -9,7 +9,7 @@ describe Magpress::Post do
       error = assert_raises Magpress::ResourceNotFoundError do
         post.find(0)
       end
-      assert_match /Invalid post id/, error.message
+      assert_match INVALID_POST_ID, error.message
     end
 
     it 'should return post details' do
@@ -221,7 +221,7 @@ describe Magpress::Post do
       error = assert_raises Magpress::ResourceNotFoundError do
         post.find(@post_id)
       end
-      assert_match /Invalid post id/, error.message
+      assert_match INVALID_POST_ID, error.message
     end
   end
 

@@ -13,7 +13,7 @@ describe Magpress::Image do
       error = assert_raises Magpress::ResourceNotFoundError do
         image.find(0)
       end
-      assert_match /Invalid post id/, error.message
+      assert_match INVALID_POST_ID, error.message
     end
 
     it 'should return image details' do
@@ -101,7 +101,7 @@ describe Magpress::Image do
       error = assert_raises Magpress::ResourceNotFoundError do
         image.find(@image_id)
       end
-      assert_match /Invalid post id/, error.message
+      assert_match INVALID_POST_ID, error.message
     end
   end
 

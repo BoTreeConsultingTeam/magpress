@@ -22,7 +22,7 @@ module FaradayMiddleware
     end
 
     def response_values(env)
-      {:status => env.status, :headers => env.response_headers, :body => env.body}
+      {:status => env.status, :headers => env.response_headers, :body => env.body}.to_json
     end
   end
 end
